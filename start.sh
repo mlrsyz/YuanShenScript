@@ -4,13 +4,13 @@
 #更新脚本-不丢弃本地修改(3)自己保证代码无误
 #更新脚本-丢弃本地修改(4)
 isUpdate=1
-
+#jdk 目录 例如: c/user/deskTop/jdk1.8/bin 请手动填写
+javaPath=c/user/deskTop/jdk1.8/bin
 if [ x"$1" = x ]; then
   echo "java path no cmd param!"
   exit 1
 fi
 
-javaPath=${1}
 uNames=$(uname -s)
 osName=${uNames:0:4}
 if [ "$osName" == "Darw" ] || [ "$osName" == "Linu" ]; then # Darwin

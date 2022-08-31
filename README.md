@@ -10,7 +10,7 @@ IntelliJ IDEA
 <br><br>
 仔细阅读```cookieFile.properties```文件设置对应的cookie信息
 ## 执行方式:
-windows(使用git bash)/mac/linux: ```sh start.sh c/user/deskTop/jdk1.8/bin```
+windows(使用git bash)/mac/linux: ```sudo sh start.sh```
 
 | #   | 支持平台    | 需要的信息    | 获取路径(点击直达)                                                                                       |
 | --- |---------|----------|--------------------------------------------------------------------------------------------------|
@@ -28,9 +28,10 @@ start.sh 中的 isUpdate 默认为1 (不是2,3,4相当于1)
 直播活动更新后会更新一次脚本活动数据<br>
 所以start.sh脚本中的 isUpdate变量请自行考量定义
 
-| #   | 文件            | 值      | 可改内容  |
-| --- |---------------|--------|-------|
+| #   | 文件            | 值        | 可改内容 |
+| --- |---------------|----------|------|
 | 1   | start.sh      | isUpdate | 2,3,4 |
+| 1   | javaPath      | 请手动按要求填写 |
 
 # 注意事项*
 所有的执行会在获取时间前3s执行(执行后可以去睡觉)
@@ -40,5 +41,5 @@ start.sh 中的 isUpdate 默认为1 (不是2,3,4相当于1)
 | 1   | YuanShen.java | main主函数                | YuanShen.startScript();<br>默认或根据当前环境时间获取之后的第一个活动自动执行                                            |
 | 2   | YuanShen.java | YuanShen.startScript() | 可本地更改指定活动执行YuanShen.startScript(ActivityType.bibi_35_1000)                                      |
 | 3   | YuanShen.java | ActivityType | 活动类型 时间可以自行更改LocalDateTime.of(年, 月, 日, 小时, 分)                                                   |
-| 4   | YuanShen.java | Script | 有能力的可以自行扩展/修改 脚本实现<br>initData()初始化数据<br>preExecute()线程提交执行前自定义处理(获取网站的前置请求数据)<br>run()抢原石的执行逻辑 |
-| 5   | YuanShen.java | Script | goOn整体通过该字段控制最后程序退出(goOn=false)如果没控制好强行关掉dos窗即可(不影响程序功能)                                        |
+| 4   | YuanShen.java | Script.Script | 有能力的可以自行扩展/修改 脚本实现<br>initData()初始化数据<br>preExecute()线程提交执行前自定义处理(获取网站的前置请求数据)<br>run()抢原石的执行逻辑 |
+| 5   | YuanShen.java | Script.Script | goOn整体通过该字段控制最后程序退出(goOn=false)如果没控制好强行关掉dos窗即可(不影响程序功能)                                        |
