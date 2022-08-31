@@ -137,7 +137,7 @@ public class Utils {
                 try {
                     classes.add(Class.forName(pk + name.substring(0, name.length() - 6)));
                 } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(name + "加载异常", e);
+                    throw new RuntimeException(pk + name + "加载异常", e);
                 }
             }
         }

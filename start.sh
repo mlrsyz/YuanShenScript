@@ -34,7 +34,9 @@ cd "$(
   cd "$(dirname "$0")"
   pwd
 )" || return
-rm -rf ./*.class
+find ../YuanShenScript -type f -name "*.class" -exec rm -rf {} \;
+touch sources.txt
+find ../YuanShenScript -name "*.java" > sources.txt
 
 gitPull() {
   while :; do
@@ -58,11 +60,11 @@ fi
 
 if [ -f "./YuanShen.java" ]; then
   if [ "$osName" == "Darw" ] || [ "$osName" == "Linu" ]; then
-    "${javaPath}"/javac -encoding utf-8 YuanShen.java
+    "${javaPath}"/javac      -encoding utf-8 @sources.txt
     echo "The script is compiled"
     "${javaPath}"/java YuanShen
   elif [ "$osName" == "MING" ]; then
-    "${javaPath}"/javac.exe -encoding utf-8 YuanShen.java
+    "${javaPath}"/javac.exe  -encoding utf-8 @sources.txt
     echo "The script is compiled"
     "${javaPath}"/java.exe YuanShen
   else
@@ -72,5 +74,7 @@ else
   echo "YuanShen.java not exist"
 fi
 
+find ../YuanShenScript -type f -name "*.class" -exec rm -rf {} \;
+rm -rf sources.txt
 echo "Exit after 10 seconds"
 sleep 10
