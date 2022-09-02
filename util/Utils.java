@@ -49,7 +49,7 @@ public class Utils {
                         .findFirst().orElse(null)));
         final URL cookieURL = Thread.currentThread().getContextClassLoader().getResource("cookieFile.properties");
         if (Objects.isNull(cookieURL)) {
-            System.out.println("please set right scriptUrl and cookieURL!! Script.Script exit!");
+            System.out.println("please set right cookieURL!! Script exit!");
             System.exit(1);
         }
         try (FileInputStream inputStream = new FileInputStream(cookieURL.getFile());
@@ -107,6 +107,7 @@ public class Utils {
         }
         final URL scriptUrl = Thread.currentThread().getContextClassLoader().getResource("");
         if (Objects.isNull(scriptUrl)) {
+            System.out.println("please set right scriptUrl!! Script exit!");
             System.exit(1);
         }
         for (Class<?> c : getScriptClasses(new File(scriptUrl.getFile()), pk)) {
