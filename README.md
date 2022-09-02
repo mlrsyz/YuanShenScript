@@ -39,7 +39,7 @@ start.sh 中的 isUpdate 默认为1 (不是2,3,4相当于1)
 
 | #   | 文件            | 函数入口                                                                                | 介绍                                                                                              |
 | --- |---------------|-------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
-| 1   | YuanShen.java | main主函数                                                                             | YuanShen.startScript();<br>默认或根据当前环境时间获取之后的第一个活动自动执行                                            |
-| 2   | cookieFile.properties | BlActivityType<br>hyActivityType<br>DyActivityType<br/>对应的key配合对应的活动                | bibi_35_1000<br/>huYa_3_330<br/>douYu_26_800<br/>对应的key可指定活动执行                                  |
+| 1   | YuanShen.java | main主函数                                                                             | YuanShen.startScript();<br>默认或根据当前环境时间获取之后的第一个活动自动执行                                       |
+| 2   | cookieFile.properties | BlActivityType<br>hyActivityType<br>DyActivityType<br/>对应的key配合对应的活动                | bibi_35_1000<br/>huYa_3_330<br/>douYu_26_800<br/>对应的key可指定活动执行<br> 不填写或者填写错误  走默认逻辑                                      |
 | 3   | /Enmu/ActivityType.java | ActivityType                                                                        | (不要打乱顺序)活动类型 时间可以自行更改LocalDateTime.of(年, 月, 日, 小时, 分)                                           |
 | 4   | /Script/Script.java | Script                                                                              | 有能力的可以自行扩展/修改 脚本实现<br>initData()初始化数据<br>preExecute()线程提交执行前自定义处理(获取网站的前置请求数据)<br>run()抢原石的执行逻辑 <br>goOn整体通过该字段控制最后程序退出(goOn=false)如果没控制好强行关掉dos窗即可(不影响程序功能)|
