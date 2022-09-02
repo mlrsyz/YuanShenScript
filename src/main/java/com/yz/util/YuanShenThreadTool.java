@@ -1,4 +1,4 @@
-package util;
+package com.yz.util;
 
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadFactory;

@@ -1,6 +1,6 @@
-package Script;
+package com.yz.script;
 
-import Enum.PlatFormType;
+import com.yz.enumtype.PlatFormType;
 
 /**
  * @author ymx

@@ -1,9 +1,7 @@
-package Enum;
+package com.yz.enumtype;
 
-import util.Utils;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 
 /**
  * @author ymx
@@ -50,13 +48,6 @@ public enum ActivityType {
 
     public PlatFormType getType() {
         return type;
-    }
-
-    public static ActivityType getByName(String name) {
-        if (Utils.stringIsEmpty(name)) {
-            return null;
-        }
-        return Arrays.stream(ActivityType.values()).filter(type -> type.name().equals(name)).findFirst().orElse(null);
     }
 
     ActivityType(PlatFormType type, String id, String act_id, String task_id, String group_id, String receive_from, LocalDateTime startTime) {

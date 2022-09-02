@@ -1,0 +1,49 @@
+###################################################################################
+### logging(logback)
+###################################################################################
+logging:
+  config: classpath:logback.xml
+  level:
+    org.springframework: warn
+    com.yz: debug
+
+###################################################################################
+### Web服务器配置
+###################################################################################
+server:
+  port: 28081
+  servlet:
+    context-path: /
+###################################################################################
+### Spring配置
+###################################################################################
+spring:
+  application.name: YuanShenScript
+  aop:
+    proxy-target-class: true
+
+  http: #------------------------------------------------------------------ http配置
+    converters:
+      preferred-json-mapper: jackson
+    encoding:
+      charset: UTF-8
+      force: true
+
+  jackson: #------------------------------------------------------------ jackson配置
+    date-format: yyyy-MM-dd HH:mm:ss
+    joda-date-time-format: yyyy-MM-dd HH:mm:ss
+    locale: zh_CN
+    time-zone: GMT+8
+
+  resources: #------------------------------------------------ html、js、css 静态资源
+    chain:
+      cache: true
+      compressed: true
+    cache:
+      period: 31536000s
+    static-locations: [ 'classpath:/static/' ]
+
+  security:
+    user:
+      name: mlrsyz
+      password: 361905186

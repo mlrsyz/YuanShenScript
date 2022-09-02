@@ -1,4 +1,4 @@
-package Enum;
+package com.yz.enumtype;
 
 /**
  * @author ymx

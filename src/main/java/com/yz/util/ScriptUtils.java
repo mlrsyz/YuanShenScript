@@ -1,14 +1,15 @@
-package util;
+package com.yz.util;
 
-import Enum.ActivityType;
-import Enum.PlatFormType;
-import Script.Script;
+import com.yz.enumtype.PlatFormType;
+import com.yz.script.Script;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -16,19 +17,9 @@ import java.util.stream.Collectors;
  * @author ymx
  * @apiNote 工具类
  **/
-public class Utils {
-
-    public static boolean collectionIsEmpty(Map<?, ?> map) {
-        return map == null || map.isEmpty();
-    }
-
-    public static boolean stringIsNotBlack(Object str) {
-        return str != null && !"".equals(str);
-    }
-
-    public static boolean stringIsEmpty(String str) {
-        return str == null || "".equals(str);
-    }
+@Slf4j
+public class ScriptUtils {
+    private final static List<Class<? extends Script>> scriptsClass = getScriptClasses();
 
     public static void sleep(long time) {
         try {
@@ -38,67 +29,12 @@ public class Utils {
         }
     }
 
-
-    //读取cookie文件设置
-    public static void readCookie() {
-        LocalDateTime now = LocalDateTime.now();
-        final List<PlatFormType> types = Arrays.stream(ActivityType.values()).map(ActivityType::getType).distinct().collect(Collectors.toList());
-        types.forEach(type -> Script.AllActivityType.put(type,
-                Arrays.stream(ActivityType.values())
-                        .filter(activityType -> Objects.equals(activityType.getType(), type) && activityType.getStartTime().isAfter(now))
-                        .findFirst().orElse(null)));
-        final URL cookieURL = Thread.currentThread().getContextClassLoader().getResource("cookieFile.properties");
-        if (Objects.isNull(cookieURL)) {
-            System.out.println("please set right cookieURL!! Script exit!");
-            System.exit(1);
-        }
-        try (FileInputStream inputStream = new FileInputStream(cookieURL.getFile());
-             InputStreamReader streamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
-            Properties properties = new Properties();
-            properties.load(streamReader);
-            properties.keySet().stream().filter(Utils::stringIsNotBlack).forEach(key -> {
-                String keyName = ((String) key);
-                final String propertyValue = properties.getProperty(keyName);
-                final PlatFormType type = Arrays.stream(PlatFormType.values())
-                        .filter(platformType -> keyName.contains(platformType.name()))
-                        .findFirst().orElse(null);
-                if (Objects.nonNull(type) && Utils.stringIsNotBlack(propertyValue)) {
-                    if (!Script.AllUserCookieMap.containsKey(type)) {
-                        Script.AllUserCookieMap.put(type, new HashMap<>());
-                    }
-                    Script.AllUserCookieMap.get(type).put(keyName, propertyValue);
-                }
-                PlatFormType settingType = null;
-                switch (keyName) {
-                    case "BlActivityType":
-                        settingType = PlatFormType.BiLiBiLi;
-                        break;
-                    case "hyActivityType":
-                        settingType = PlatFormType.HuYa;
-                        break;
-                    case "DyActivityType":
-                        settingType = PlatFormType.DouYu;
-                        break;
-                }
-                if (Objects.nonNull(settingType) && Utils.stringIsNotBlack(propertyValue)) {
-                    final ActivityType activityType = ActivityType.getByName(propertyValue);
-                    if (Objects.nonNull(activityType)) {
-                        Script.AllActivityType.put(settingType, activityType);
-                    }
-                }
-            });
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
     /**
      * 取得当前类路径下的所有类
      *
      * @return Script路径下所有集合
      */
-    public static List<Class<? extends Script>> getScriptClasses() {
+    private static List<Class<? extends Script>> getScriptClasses() {
         List<Class<? extends Script>> classes = new ArrayList<>();
         Package aPackage = Script.class.getPackage();
         String pk = "";
@@ -107,7 +43,7 @@ public class Utils {
         }
         final URL scriptUrl = Thread.currentThread().getContextClassLoader().getResource("");
         if (Objects.isNull(scriptUrl)) {
-            System.out.println("please set right scriptUrl!! Script exit!");
+            log.info("please set right scriptUrl!! Script exit!");
             System.exit(1);
         }
         for (Class<?> c : getScriptClasses(new File(scriptUrl.getFile()), pk)) {
@@ -134,7 +70,7 @@ public class Utils {
                 classes.addAll(getScriptClasses(f, pk));
             }
             String name = f.getName();
-            if (name.endsWith(".class") && name.contains("Script")) {
+            if (name.endsWith(".class") && Arrays.stream(PlatFormType.values()).anyMatch(platFormType -> name.contains(platFormType.getClassName()))) {
                 try {
                     classes.add(Class.forName(pk + name.substring(0, name.length() - 6)));
                 } catch (ClassNotFoundException e) {
@@ -144,7 +80,6 @@ public class Utils {
         }
         return classes;
     }
-
 
     /**
      * 向指定URL发送GET方法的请求
@@ -159,9 +94,9 @@ public class Utils {
         BufferedReader in = null;
         try {
             String urlNameString = url;
-            if (!collectionIsEmpty(params)) {
+            if (!CollectionUtils.isEmpty(params)) {
                 String param = params.entrySet().stream()
-                        .filter(entry -> stringIsNotBlack(entry.getKey()) && stringIsNotBlack(entry.getValue()))
+                        .filter(entry -> !StringUtils.isEmpty(entry.getKey()) && !StringUtils.isEmpty(entry.getValue()))
                         .map(entry -> entry.getKey() + "=" + entry.getValue())
                         .collect(Collectors.joining("&"));
                 urlNameString += "?" + param;
@@ -170,7 +105,7 @@ public class Utils {
             // 打开和URL之间的连接
             URLConnection connection = realUrl.openConnection();
             // 设置通用的请求属性
-            if (!collectionIsEmpty(headers)) {
+            if (!CollectionUtils.isEmpty(headers)) {
                 headers.forEach(connection::setRequestProperty);
             }
             // 建立实际的连接
@@ -222,7 +157,7 @@ public class Utils {
             // 打开和URL之间的连接
             URLConnection conn = realUrl.openConnection();
             // 设置通用的请求属性
-            if (!collectionIsEmpty(headers)) {
+            if (!CollectionUtils.isEmpty(headers)) {
                 headers.forEach(conn::setRequestProperty);
             }
             // 发送POST请求必须设置如下两行
@@ -231,9 +166,9 @@ public class Utils {
             // 获取URLConnection对象对应的输出流
             out = new PrintWriter(conn.getOutputStream());
             // 发送请求参数
-            if (!collectionIsEmpty(params)) {
+            if (!CollectionUtils.isEmpty(params)) {
                 String param = params.entrySet().stream()
-                        .filter(entry -> stringIsNotBlack(entry.getKey()) && stringIsNotBlack(entry.getValue()))
+                        .filter(entry -> !StringUtils.isEmpty(entry.getKey()) && !StringUtils.isEmpty(entry.getValue()))
                         .map(entry -> entry.getKey() + "=" + entry.getValue())
                         .collect(Collectors.joining("&"));
                 out.print(param);
@@ -265,5 +200,18 @@ public class Utils {
             }
         }
         return result.toString();
+    }
+
+    public static Script createScript(PlatFormType type) {
+        Class<? extends Script> aClass1 = scriptsClass.stream().filter(aClass -> Objects.equals(aClass.getSimpleName(), type.getClassName()))
+                .findFirst().orElse(null);
+        if (Objects.nonNull(aClass1)) {
+            try {
+                return aClass1.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return null;
     }
 }

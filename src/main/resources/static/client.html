@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>原石脚本</title>
+    <script src="https://cdn.bootcss.com/sockjs-client/0.3.4/sockjs.min.js"></script>
+
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<style>
+    .jumbotron {
+        width: 100%;
+    }
+
+    #cookie {
+        height: 3rem;
+        font-size: 1rem;
+        line-height: 3rem;
+        margin: 1rem;
+    }
+
+    #dateTime {
+        height: 3rem;
+        font-size: 1rem;
+        line-height: 3rem;
+        margin: 1rem;
+    }
+
+    .btn {
+        margin-right: 5px;
+    }
+
+    #connect {
+        margin-left: 1rem;
+    }
+
+    #log {
+        margin: 1rem 0 0 1rem;
+    }
+
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="jumbotron">
+
+            <div class="form-group">
+                <label for="cookie" class="col-xs-1 control-label">cookie</label>
+                <input type="text" class="col-sm-10" id="cookie" placeholder="输入你的cookie">
+            </div>
+
+            <div class="form-group">
+                <label for="activityType" class="col-xs-1 control-label">指定活动</label>
+                <select id="activityType">
+                    <option value="bibi_3_330">bibi_3_330</option>
+                    <option value="bibi_5_660">bibi_5_660</option>
+                    <option value="bibi_10_1000">bibi_10_1000</option>
+                    <option value="bibi_18_800">bibi_18_800</option>
+                    <option value="bibi_26_800">bibi_26_800</option>
+                    <option value="bibi_35_1000">bibi_35_1000</option>
+
+                    <option value="douYu_3_330">douYu_3_330</option>
+                    <option value="douYu_5_660">douYu_5_660</option>
+                    <option value="douYu_10_1000">douYu_10_1000</option>
+                    <option value="douYu_18_800">douYu_18_800</option>
+                    <option value="douYu_26_800">douYu_26_800</option>
+                    <option value="douYu_35_1000">douYu_35_1000</option>
+                </select>
+            </div>
+
+
+            <div class="form-group">
+                <label for="dateTime" class="col-xs-1 control-label">执行时间</label>
+                <input type="datetime-local" id="dateTime" class="col-xs-3">
+            </div>
+
+            <input type="button" value="请先点击我连接服务器" class="btn btn-info" id="connect" onclick="connect()"/>
+            <input type="button" value="执行" class="btn btn-success" id="sent" disabled="disabled" onclick="sent()"/>
+            <input type="button" value="断开" class="btn btn-danger" id="disconnect" disabled="disabled"
+                   onclick="disconnect()"/>
+            <div id="log">
+                <p>执行记录:</p>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    let cookie = document.querySelector('#cookie');
+    let activityType = document.querySelector('#activityType');
+    let dateTime = document.querySelector('#dateTime');
+    let connectBtn = document.querySelector("#connect");
+    let sentBtn = document.querySelector("#sent");
+    let disconnectBtn = document.querySelector("#disconnect");
+    let logDiv = document.querySelector("#log");
+
+    let ws = null;
+
+    function connect() {
+        let targetUri = "/scripts/connect";
+        ws = new SockJS(targetUri);
+        ws.onopen = function () {
+            setConnected(true);
+            log('和服务端连接成功！');
+        };
+        ws.onmessage = function (event) {
+            log('服务端说：' + event.data);
+        };
+        ws.onclose = function () {
+            setConnected(false);
+            log('和服务端断开连接！')
+        }
+    }
+
+    function sent() {
+        if (ws != null) {
+            let msg = JSON.stringify({
+                "cookie": cookie.value,
+                "activityType": activityType.value,
+                "dateTime": dateTime.value,
+            })
+            ws.send(msg);
+            log('客户端说：' + msg);
+        } else {
+            log('请先建立连接！')
+        }
+    }
+
+    function disconnect() {
+        if (ws != null) {
+            ws.close();
+            ws = null;
+        }
+        setConnected(false);
+    }
+
+    function log(value) {
+        let content = document.createElement('p');
+        content.innerHTML = value;
+        logDiv.appendChild(content);
+    }
+
+    function setConnected(connected) {
+        connectBtn.disabled = connected;
+        disconnectBtn.disabled = !connected;
+        sentBtn.disabled = !connected;
+    }
+</script>
+</body>
+</html>
