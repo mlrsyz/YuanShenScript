@@ -71,9 +71,9 @@ public class ScriptUtils {
                 classes.addAll(getScriptClasses(f, pk));
             }
             String name = f.getName();
+            log.info("脚本 name:{}", pk + name);
             if (name.endsWith(".class") && Arrays.stream(PlatFormType.values()).anyMatch(platFormType -> name.contains(platFormType.getClassName()))) {
                 try {
-                    log.info("脚本 name:{}", pk + name);
                     classes.add(Class.forName(pk + name.substring(0, name.length() - 6)));
                 } catch (ClassNotFoundException e) {
                     throw new RuntimeException(pk + name + "加载异常", e);
