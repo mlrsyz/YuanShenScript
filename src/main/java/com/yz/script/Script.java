@@ -66,6 +66,7 @@ public abstract class Script implements Runnable {
 
     //线程提交执行
     public void execute(String cookie, ActivityType activityType, LocalDateTime executionTime, WebSocketSession session) {
+        this.session = session;
         scriptNum++;
         sendMessage("当前执行脚本的数量:" + scriptNum + " 上限为:5");
         if (scriptNum >= 5) {
@@ -86,7 +87,6 @@ public abstract class Script implements Runnable {
         }
         this.cookie = cookie;
         this.activityType = activityType;
-        this.session = session;
         initData();
         if (!goOn) {
             close();

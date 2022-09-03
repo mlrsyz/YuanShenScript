@@ -46,6 +46,7 @@ public class ScriptUtils {
             log.info("please set right scriptUrl!! Script exit!");
             System.exit(1);
         }
+        log.info("pk :{},scriptUrl:{}", pk, scriptUrl.getFile());
         for (Class<?> c : getScriptClasses(new File(scriptUrl.getFile()), pk)) {
             if (Script.class.isAssignableFrom(c) && !Script.class.equals(c)) {
                 classes.add(c.asSubclass(Script.class));
@@ -72,6 +73,7 @@ public class ScriptUtils {
             String name = f.getName();
             if (name.endsWith(".class") && Arrays.stream(PlatFormType.values()).anyMatch(platFormType -> name.contains(platFormType.getClassName()))) {
                 try {
+                    log.info("脚本 name:{}", pk + name);
                     classes.add(Class.forName(pk + name.substring(0, name.length() - 6)));
                 } catch (ClassNotFoundException e) {
                     throw new RuntimeException(pk + name + "加载异常", e);
