@@ -6,7 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -41,13 +44,7 @@ public class ScriptUtils {
         if (Objects.nonNull(aPackage)) {
             pk = aPackage.getName() + ".";
         }
-        final URL scriptUrl = Thread.currentThread().getContextClassLoader().getResource("");
-        if (Objects.isNull(scriptUrl)) {
-            log.info("please set right scriptUrl!! Script exit!");
-            System.exit(1);
-        }
-        log.info("pk :{},scriptUrl:{}", pk, scriptUrl.getFile());
-        for (Class<?> c : getScriptClasses(new File(scriptUrl.getFile()), pk)) {
+        for (Class<?> c : getScriptClasses(pk)) {
             if (Script.class.isAssignableFrom(c) && !Script.class.equals(c)) {
                 classes.add(c.asSubclass(Script.class));
             }
@@ -58,29 +55,17 @@ public class ScriptUtils {
     /**
      * 迭代查找类
      *
-     * @param dir 资源
      * @return List<Class < ?>> 包路径下class
      */
-    private static List<Class<?>> getScriptClasses(File dir, String pk) {
+    private static List<Class<?>> getScriptClasses(String pk) {
         List<Class<?>> classes = new ArrayList<>();
-        if (!dir.exists()) {
-            log.info("文件不存在");
-            return classes;
-        }
-        for (File f : Objects.requireNonNull(dir.listFiles())) {
-            if (f.isDirectory()) {
-                classes.addAll(getScriptClasses(f, pk));
+        Arrays.stream(PlatFormType.values()).map(PlatFormType::getClassName).collect(Collectors.toList()).forEach(name -> {
+            try {
+                classes.add(Class.forName(pk + name));
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(pk + name + "加载异常", e);
             }
-            String name = f.getName();
-            log.info("脚本 name:{}", pk + name);
-            if (name.endsWith(".class") && Arrays.stream(PlatFormType.values()).anyMatch(platFormType -> name.contains(platFormType.getClassName()))) {
-                try {
-                    classes.add(Class.forName(pk + name.substring(0, name.length() - 6)));
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(pk + name + "加载异常", e);
-                }
-            }
-        }
+        });
         return classes;
     }
 
