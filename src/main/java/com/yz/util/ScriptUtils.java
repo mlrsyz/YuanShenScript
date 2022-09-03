@@ -64,6 +64,7 @@ public class ScriptUtils {
     private static List<Class<?>> getScriptClasses(File dir, String pk) {
         List<Class<?>> classes = new ArrayList<>();
         if (!dir.exists()) {
+            log.info("文件不存在");
             return classes;
         }
         for (File f : Objects.requireNonNull(dir.listFiles())) {
