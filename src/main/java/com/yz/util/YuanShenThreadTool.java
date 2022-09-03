@@ -42,6 +42,6 @@ public class YuanShenThreadTool {
             TimeUnit.SECONDS,
             new LinkedBlockingDeque<>(1),
             new YuanShenThreadFactory(),
-            (r, e) -> System.out.println("Thread Pool:" + e.toString() + "--- The number of tasks exceeds 10 and the thread is rejected: " + r.toString()));
+            (r, e) -> System.out.println("ys Thread Pool:" + e.toString() + "--- 任务数超过50，线程被拒绝: " + r.toString()));
 
 }

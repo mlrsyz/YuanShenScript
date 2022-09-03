@@ -6,6 +6,7 @@ import com.yz.enumtype.PlatFormType;
 import com.yz.enumtype.RequestEntry;
 import com.yz.enumtype.UrlType;
 import com.yz.util.ScriptUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
  * @author ymx
  * @apiNote
  **/
+@Slf4j
 public class BiBiScript extends Script {
     //原神获取奖励信息前提数据url
     private static final String singleTaskUrl = "https://api.bilibili.com/x/activity/mission/single_task";
@@ -49,7 +51,7 @@ public class BiBiScript extends Script {
     @Override
     public void preExecute() {
         //bibi的领奖前置数据条件  单独线程设置ReceiveId
-        while (true) {
+        while (goOn) {
             String receiveIdNow = cookieData.get("receiveIdNow");
             String singleTaskResponse = ScriptUtils.sendGet(singleTaskUrl, getRequestData(RequestEntry.param, UrlType.singleTask, activityType), getRequestData(RequestEntry.header, UrlType.singleTask, activityType));
             if (!StringUtils.isEmpty(singleTaskResponse) && singleTaskResponse.contains("receive_id")) {
@@ -67,15 +69,19 @@ public class BiBiScript extends Script {
 
     @Override
     public void run() {
-        while (count.get() > 0 && goOn) {
-            synchronized (BiBiScript.class) {
+        while (count.get() > 0) {
+            synchronized (this) {
+                if (!goOn) {
+                    log.info("执行结束 :{}", this);
+                    return;
+                }
                 if (isExit()) {
-                    if (!goOn) {
-                        return;
-                    }
                     goOn = false;
                     sendMessage("===============执行结束==================");
-                    sendMessage(cookieData.get("ckd"));
+                    log.info("执行结束 :{}", this);
+                    if (cookieData.containsKey("ckd")) {
+                        sendMessage(cookieData.getOrDefault("ckd", ""));
+                    }
                     return;
                 }
             }

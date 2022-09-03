@@ -4,8 +4,8 @@ import com.yz.enumtype.ActivityType;
 import com.yz.enumtype.PlatFormType;
 import com.yz.util.ScriptUtils;
 import com.yz.util.YuanShenThreadTool;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
-import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -21,8 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author ymx
  * @apiNote 脚本模板
  **/
+@Slf4j
 public abstract class Script implements Runnable {
-    private int scriptNum = 0;
     //是否继续处理
     public boolean goOn = true;
 
@@ -49,16 +49,9 @@ public abstract class Script implements Runnable {
 
     public void sendMessage(String str) {
         try {
-            session.sendMessage(new TextMessage(str));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void close() {
-        try {
-            session.close(CloseStatus.NORMAL);
-            scriptNum--;
+            if (session.isOpen()) {
+                session.sendMessage(new TextMessage(str));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -67,64 +60,42 @@ public abstract class Script implements Runnable {
     //线程提交执行
     public void execute(String cookie, ActivityType activityType, LocalDateTime executionTime, WebSocketSession session) {
         this.session = session;
-        scriptNum++;
-        sendMessage("当前执行脚本的数量:" + scriptNum + " 上限为:5");
-        if (scriptNum >= 5) {
-            sendMessage("当前执行脚本的数量:" + scriptNum + "  大于阈值 此次不执行,请等待其他脚本执行完毕再试");
-            close();
-            return;
-        }
         if (StringUtils.isEmpty(cookie) || Objects.isNull(activityType) || Objects.isNull(session)) {
-            close();
             return;
         }
         //判断开始执行时间 提前3s执行
         LocalDateTime localTime;
         if (Objects.nonNull(executionTime)) {
-            localTime = executionTime;
+            localTime = executionTime.minusSeconds(3);
         } else {
             localTime = activityType.getStartTime().minusSeconds(3);
         }
         this.cookie = cookie;
         this.activityType = activityType;
         initData();
-        if (!goOn) {
-            close();
-            return;
-        }
         sendMessage("活动开始时间 " + activityType.getStartTime() + "-----脚本执行时间: " + localTime);
-        while (true) {
-            LocalDateTime now = LocalDateTime.now();
-            if (now.isBefore(localTime)) {
-                if (now.getSecond() % 25 == 0) {
-                    long millis = Duration.between(now, localTime).toMillis() / 1000;
-                    long day = millis / 86400;
-                    long hour = millis % 86400 / 3600;
-                    long minute = millis % 86400 % 3600 / 60;
-                    long second = millis % 60;
-                    sendMessage("剩余  [" + day + " 天 " + hour + ":" + minute + ":" + second + "]");
-                }
-                ScriptUtils.sleep(1000);
-            } else {
-                sendMessage(" 开始执行开始时间 " + now);
-                break;
-            }
-        }
-        preExecute();
-        if (!goOn) {
-            close();
-            return;
-        }
-        //线程开始执行
-        for (int i = 0; i < threadNum; i++) {
-            YuanShenThreadTool.ysThreadPoolExecutor.submit(this);
-        }
         new Thread(() -> {
-            while (true) {
-                if (!goOn) {
-                    close();
-                    return;
+            while (goOn) {
+                LocalDateTime now = LocalDateTime.now();
+                if (now.isBefore(localTime)) {
+                    if (now.getSecond() % 25 == 0) {
+                        long millis = Duration.between(now, localTime).toMillis() / 1000;
+                        long day = millis / 86400;
+                        long hour = millis % 86400 / 3600;
+                        long minute = millis % 86400 % 3600 / 60;
+                        long second = millis % 60;
+                        sendMessage("剩余  [" + day + " 天 " + hour + ":" + minute + ":" + second + "]");
+                    }
+                    ScriptUtils.sleep(1000);
+                } else {
+                    sendMessage(" 开始执行开始时间 " + now);
+                    break;
                 }
+            }
+            preExecute();
+            //线程开始执行
+            for (int i = 0; i < threadNum; i++) {
+                YuanShenThreadTool.ysThreadPoolExecutor.submit(this);
             }
         }).start();
     }
