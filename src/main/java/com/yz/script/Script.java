@@ -61,6 +61,7 @@ public abstract class Script implements Runnable {
     public void execute(String cookie, ActivityType activityType, LocalDateTime executionTime, WebSocketSession session) {
         this.session = session;
         if (StringUtils.isEmpty(cookie) || Objects.isNull(activityType) || Objects.isNull(session)) {
+            sendMessage("执行数据有误(cookie为空/活动为空不/服务端通讯不存在),停止执行");
             return;
         }
         //判断开始执行时间 提前3s执行
@@ -72,8 +73,8 @@ public abstract class Script implements Runnable {
         }
         this.cookie = cookie;
         this.activityType = activityType;
-        initData();
         sendMessage("活动开始时间 " + activityType.getStartTime() + "-----脚本执行时间: " + localTime);
+        initData();
         new Thread(() -> {
             while (goOn) {
                 LocalDateTime now = LocalDateTime.now();
