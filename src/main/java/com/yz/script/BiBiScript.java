@@ -31,12 +31,12 @@ public class BiBiScript extends Script {
     public void initData() {
         threadNum = 10;
         if (StringUtils.isEmpty(cookie)) {
-            sendMessage("请设置cookie信息!");
+            sendMessage("请设置cookie信息!执行结束");
             goOn = false;
             return;
         }
         if (!cookie.contains("SESSDATA")) {
-            sendMessage("请检查 cookie 信息!");
+            sendMessage("请检查 cookie 信息!执行结束");
         }
         //设置cookieData运行数据
         cookieData.putAll(Arrays.stream(cookie.split(";"))
@@ -45,6 +45,7 @@ public class BiBiScript extends Script {
                 .collect(Collectors.toMap(v -> v.substring(0, v.indexOf("=")), v -> v.substring(v.indexOf("=") + 1))));
         if (cookieData.size() < 3) {
             goOn = false;
+            sendMessage("请检查 cookie 信息!执行结束");
         }
     }
 

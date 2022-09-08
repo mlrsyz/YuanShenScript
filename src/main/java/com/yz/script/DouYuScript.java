@@ -24,7 +24,7 @@ public class DouYuScript extends Script {
         //斗鱼的线程设置少一点 推荐1-5即可
         threadNum = 1;
         if (StringUtils.isEmpty(cookie)) {
-            sendMessage("请设置cookie信息!");
+            sendMessage("请设置cookie信息!执行结束");
             goOn = false;
             return;
         }
@@ -35,6 +35,7 @@ public class DouYuScript extends Script {
                 .collect(Collectors.toMap(v -> v.substring(0, v.indexOf("=")), v -> v.substring(v.indexOf("=") + 1))));
         if (cookieData.size() < 3) {
             goOn = false;
+            sendMessage("请检查 cookie 信息!执行结束");
         }
     }
 
