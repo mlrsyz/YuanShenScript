@@ -37,6 +37,7 @@ public class BiBiScript extends Script {
         }
         if (!cookie.contains("SESSDATA")) {
             sendMessage("请检查 cookie 信息!执行结束");
+            goOn = false;
             return;
         }
         //设置cookieData运行数据
