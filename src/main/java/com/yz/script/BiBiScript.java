@@ -120,7 +120,7 @@ public class BiBiScript extends Script {
                     }
                 }
             }
-            ScriptUtils.sleep(sleepTime);
+//            ScriptUtils.sleep(sleepTime);
         }
     }
 
