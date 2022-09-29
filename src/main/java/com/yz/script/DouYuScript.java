@@ -4,8 +4,10 @@ import com.yz.enumtype.ActivityType;
 import com.yz.enumtype.PlatFormType;
 import com.yz.enumtype.RequestEntry;
 import com.yz.util.ScriptUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
  * @author ymx
  * @apiNote 斗鱼脚本
  **/
+@Slf4j
 public class DouYuScript extends Script {
     //领取奖励url
     private static final String receiveUrl = "https://www.douyu.com/japi/carnival/nc/roomTask/getPrize";
@@ -46,8 +49,20 @@ public class DouYuScript extends Script {
 
     @Override
     public void run() {
-        String postResult = ScriptUtils.sendPost(receiveUrl, getRequestData(RequestEntry.param, activityType), getRequestData(RequestEntry.header, activityType));
-        sendMessage(postResult);
+        while (count.get() > 0) {
+            if (!goOn) {
+                log.info("执行结束 :{}", this);
+                return;
+            }
+            String postResult = ScriptUtils.sendPost(receiveUrl, getRequestData(RequestEntry.param, activityType), getRequestData(RequestEntry.header, activityType));
+            sendMessage(postResult);
+            if (postResult.contains("奖励已领取")) {
+                sendMessage("奖励已领取:" + LocalTime.now() + "====>" + count.getAndDecrement() + " 次执行");
+                goOn = false;
+            } else {
+                sendMessage("未抢到==>(斗鱼)下一次执行:" + LocalTime.now() + "*********脚本剩余 " + count.getAndDecrement() + " 次执行");
+            }
+        }
         goOn = false;
     }
 
@@ -66,8 +81,8 @@ public class DouYuScript extends Script {
             res.put("content-type", "application/x-www-form-urlencoded");
             res.put("cookie", cookie);
             res.put("origin", "https://www.douyu.com");
-            res.put("referer", "https://www.douyu.com/topic/ys30?rid=479079");
-            res.put("sec-ch-ua", "Chromium\";v=\"104\", \" Not A;Brand\";v=\"99\", \"Microsoft Edge\";v=\"104\"");
+            res.put("referer", "https://www.douyu.com/topic/ys31");
+            res.put("sec-ch-ua", "\"Microsoft Edge\";v=\"105\", \"Not)A;Brand\";v=\"8\", \"Chromium\";v=\"105\"");
             res.put("sec-ch-ua-mobile", "?0");
             res.put("sec-ch-ua-platform", "macOS");
             res.put("sec-fetch-dest", "empty");
