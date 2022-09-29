@@ -24,6 +24,7 @@ public class DouYuScript extends Script {
 
     @Override
     public void initData() {
+        count.set(300);
         //斗鱼的线程设置少一点 推荐1-5即可
         threadNum = 1;
         if (StringUtils.isEmpty(cookie)) {
