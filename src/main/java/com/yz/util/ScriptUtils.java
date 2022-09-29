@@ -1,5 +1,8 @@
 package com.yz.util;
 
+import com.alibaba.fastjson.JSON;
+import com.yz.domain.BRes;
+import com.yz.enumtype.ActivityType;
 import com.yz.enumtype.PlatFormType;
 import com.yz.script.Script;
 import lombok.extern.slf4j.Slf4j;
@@ -201,5 +204,45 @@ public class ScriptUtils {
             }
         }
         return null;
+    }
+
+    public static void main(String[] args) {
+        getBiLiBiLiActivityType();
+    }
+
+    public static void getBiLiBiLiActivityType() {
+        String url = "https://api.bilibili.com/x/activity/mission/single_task";
+        final HashMap<String, String> headMap = new HashMap<String, String>() {{
+            put("authority", "api.bilibili.com");
+            put("accept", "application/json, text/plain, */*");
+            put("accept-language", "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6");
+            put("cookie", " b_lsid=27CA1821_183888E6DB3; _uuid=2FF103175-A344-258F-1952-C1C13BF1847879131infoc; buvid_fp=56b4602b8f6e18425c41ca4c8c5796aa; buvid3=18187E1A-64F0-5D82-767D-2D552E09201281270infoc; b_nut=1664443381; buvid4=5A71AB32-17F0-2766-DF3C-3364B84C447F81270-022092917-JhtBUeZUogfvog8fp3fwrQ%3D%3D; CURRENT_FNVAL=4048; sid=8rt0hv2u");
+            put("dnt", "1");
+            put("origin", "https://www.bilibili.com");
+            put("referer", " https://www.bilibili.com/");
+            put("sec-ch-ua", "\"Microsoft Edge\";v=\"105\", \"Not)A;Brand\";v=\"8\", \"Chromium\";v=\"105\"");
+            put("sec-ch-ua-mobile", " ?0");
+            put("sec-ch-ua-platform", "macOS");
+            put("sec-fetch-dest", "empty");
+            put("sec-fetch-mode", "cors");
+            put("sec-fetch-site", "same-site");
+            put("sec-gpc", "1");
+            put("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.53");
+        }};
+        final HashMap<String, String> params = new HashMap<>();
+        Arrays.stream(ActivityType.values()).filter(activityType -> PlatFormType.BiLiBiLi.equals(activityType.getType()))
+                .map(ActivityType::getId).collect(Collectors.toList())
+                .forEach(id -> {
+                    params.put("id", id);
+                    final String result = sendGet(url, params, headMap);
+                    if (!StringUtils.isEmpty(result)) {
+                        final BRes bRes = JSON.parseObject(result, BRes.class);
+                        log.info("\"{}\",\"{}\",\"{}\",\"{}\"", id,
+                                bRes.getData().getTask_info().getGroup_list().get(0).getAct_id(),
+                                bRes.getData().getTask_info().getGroup_list().get(0).getTask_id(),
+                                bRes.getData().getTask_info().getGroup_list().get(0).getGroup_id()
+                        );
+                    }
+                });
     }
 }

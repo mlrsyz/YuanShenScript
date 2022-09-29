@@ -24,18 +24,20 @@ public enum ActivityType {
     douYu_35_1000(PlatFormType.DouYu, "", "", "126323", "", "",
             LocalDateTime.of(2022, 9, 27, 2, 0)),
     //==================⬇BiLiBiLi活动⬇==============================================================================================================================================================
-    bibi_3_330(PlatFormType.BiLiBiLi, "e62ce499", "425", "1598", "7712", "missionLandingPage",
+    bibi_3_330_test(PlatFormType.BiLiBiLi, "e62ce499", "425", "1598", "7712", "missionLandingPage",
             LocalDateTime.of(2022, 8, 26, 2, 0)),
-    bibi_5_660(PlatFormType.BiLiBiLi, "1a468055", "425", "1599", "7714", "missionLandingPage",
-            LocalDateTime.of(2022, 8, 28, 2, 0)),
-    bibi_10_1000(PlatFormType.BiLiBiLi, "56cb6703", "425", "1600", "7715", "missionLandingPage",
-            LocalDateTime.of(2022, 9, 2, 2, 0)),
-    bibi_18_800(PlatFormType.BiLiBiLi, "99e34eec", "425", "1601", "7716", "missionLandingPage",
-            LocalDateTime.of(2022, 9, 10, 2, 0)),
-    bibi_26_800(PlatFormType.BiLiBiLi, "c8daa502", "425", "1602", "7717", "missionLandingPage",
-            LocalDateTime.of(2022, 9, 18, 2, 0)),
-    bibi_35_1000(PlatFormType.BiLiBiLi, "08bb556a", "425", "1603", "7718", "missionLandingPage",
-            LocalDateTime.of(2022, 9, 27, 2, 0));
+    bibi_3_330(PlatFormType.BiLiBiLi, "2aa3293e", "454", "1773", "7973", "missionLandingPage",
+            LocalDateTime.of(2022, 9, 30, 2, 0)),
+    bibi_5_660(PlatFormType.BiLiBiLi, "52bab58a", "454", "1774", "7974", "missionLandingPage",
+            LocalDateTime.of(2022, 10, 2, 2, 0)),
+    bibi_10_1000(PlatFormType.BiLiBiLi, "76a756b4", "454", "1775", "7975", "missionLandingPage",
+            LocalDateTime.of(2022, 10, 7, 2, 0)),
+    bibi_18_800(PlatFormType.BiLiBiLi, "9d1d7ba3", "454", "1776", "7977", "missionLandingPage",
+            LocalDateTime.of(2022, 10, 15, 2, 0)),
+    bibi_26_800(PlatFormType.BiLiBiLi, "c0d9081e", "454", "1777", "7978", "missionLandingPage",
+            LocalDateTime.of(2022, 10, 28, 2, 0)),
+    bibi_35_1000(PlatFormType.BiLiBiLi, "eb86ebd5", "454", "1778", "7979", "missionLandingPage",
+            LocalDateTime.of(2022, 11, 6, 2, 0));
     //================================================================================================================================================================================
     final PlatFormType type;
     final String id;

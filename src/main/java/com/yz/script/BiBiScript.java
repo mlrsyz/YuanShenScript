@@ -1,6 +1,8 @@
 package com.yz.script;
 
 
+import com.alibaba.fastjson.JSON;
+import com.yz.domain.BRes;
 import com.yz.enumtype.ActivityType;
 import com.yz.enumtype.PlatFormType;
 import com.yz.enumtype.RequestEntry;
@@ -14,6 +16,7 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -58,8 +61,8 @@ public class BiBiScript extends Script {
             String receiveIdNow = cookieData.get("receiveIdNow");
             String singleTaskResponse = ScriptUtils.sendGet(singleTaskUrl, getRequestData(RequestEntry.param, UrlType.singleTask, activityType), getRequestData(RequestEntry.header, UrlType.singleTask, activityType));
             if (!StringUtils.isEmpty(singleTaskResponse) && singleTaskResponse.contains("receive_id")) {
-                receiveIdNow = Arrays.stream(singleTaskResponse.split(",")).filter(t -> t.contains("receive_id"))
-                        .map(t -> t.split(":")[1]).findFirst().orElse(null);
+                final BRes response = JSON.parseObject(singleTaskResponse, BRes.class);
+                receiveIdNow = Objects.nonNull(response) ? response.getData().getTask_info().getReceive_id().toString() : null;
             }
             if (receiveIdValid(receiveIdNow)) {
                 cookieData.put("receiveIdNow", receiveIdNow);
