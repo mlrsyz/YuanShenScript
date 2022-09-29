@@ -1,4 +1,5 @@
 #!/bin/bash
+git pull
 ##### 杀死java服务      =========================>start  #####
 pid=`ps -ef | grep -E "YuanShenScript-1.0-SNAPSHOT.jar" | grep -v grep  | awk '{print $2}'`
 
