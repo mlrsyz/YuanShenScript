@@ -67,12 +67,11 @@ public class DouYuScript extends Script {
             synchronized (DouYuScript.class) {
                 if (!isExit()) {
                     sendMessage(postResult);
-                    if (postResult.contains("请登录")) {
-                        sendMessage("请设置正确的douyu cookie信息,中断此次执行任务");
-                        goOn = false;
-                    }
                     if (postResult.contains("奖励已领取")) {
                         cookieData.put("exit", "true");
+                    } else if (postResult.contains("请登录")) {
+                        sendMessage("请设置正确的斗鱼 cookie信息,中断此次执行任务");
+                        goOn = false;
                     } else {
                         sendMessage("未抢到==>(斗鱼)下一次执行:" + LocalTime.now() + "*********脚本剩余 " + count.getAndDecrement() + " 次执行");
                     }
