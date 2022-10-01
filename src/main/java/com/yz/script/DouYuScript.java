@@ -67,6 +67,10 @@ public class DouYuScript extends Script {
             synchronized (DouYuScript.class) {
                 if (!isExit()) {
                     sendMessage(postResult);
+                    if (postResult.contains("请登录")) {
+                        sendMessage("请设置正确的douyu cookie信息,中断此次执行任务");
+                        goOn = false;
+                    }
                     if (postResult.contains("奖励已领取")) {
                         cookieData.put("exit", "true");
                     } else {
