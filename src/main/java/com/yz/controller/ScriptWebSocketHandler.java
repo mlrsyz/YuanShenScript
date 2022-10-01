@@ -88,10 +88,10 @@ public class ScriptWebSocketHandler extends TextWebSocketHandler {
             session.close(CloseStatus.NORMAL);
             return;
         }
+        session.sendMessage(new TextMessage("正在执行任务的数量:" + (count + 1)+ " 上限为:10"));
         List<Script> scripts = scriptMap.getOrDefault(session.toString(), new ArrayList<>());
         scripts.add(script);
         scriptMap.put(session.toString(), scripts);
         script.execute(req.getCookie(), req.getActivityType(), req.getDateTime(), session);
-        session.sendMessage(new TextMessage("正在执行任务的数量:" + (count + 1)+ " 上限为:10"));
     }
 }
