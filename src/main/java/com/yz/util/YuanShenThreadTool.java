@@ -37,10 +37,10 @@ public class YuanShenThreadTool {
 
     public static final ThreadPoolExecutor ysThreadPoolExecutor = new ThreadPoolExecutor(
             1,
-            50,
+            200,
             60,
             TimeUnit.SECONDS,
-            new LinkedBlockingDeque<>(1),
+            new LinkedBlockingDeque<>(500),
             new YuanShenThreadFactory(),
             (r, e) -> System.out.println("ys Thread Pool:" + e.toString() + "--- 任务数超过50，线程被拒绝: " + r.toString()));
 

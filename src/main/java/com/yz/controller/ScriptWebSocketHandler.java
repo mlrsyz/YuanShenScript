@@ -56,10 +56,10 @@ public class ScriptWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        long count = scriptMap.values().stream().mapToLong(Collection::size).sum();
-        session.sendMessage(new TextMessage("当前执行脚本的数量:" + count + "(本次+1)" + " 上限为:5"));
-        if (count >= 5) {
-            session.sendMessage(new TextMessage("当前执行脚本的数量:" + count + "  大于阈值 此次不执行,请等待其他脚本执行完毕再试"));
+        long count = scriptMap.values().stream().flatMap(Collection::parallelStream)
+                .filter(script -> script.goOn).count();
+        if (count >= 10) {
+            session.sendMessage(new TextMessage("当前执行脚本的数量:" + count + "  大于阈值 此次不执行,其他脚本断开后再试"));
             return;
         }
         log.info(session.toString());
@@ -92,5 +92,6 @@ public class ScriptWebSocketHandler extends TextWebSocketHandler {
         scripts.add(script);
         scriptMap.put(session.toString(), scripts);
         script.execute(req.getCookie(), req.getActivityType(), req.getDateTime(), session);
+        session.sendMessage(new TextMessage("正在执行任务的数量:" + (count + 1)+ " 上限为:10"));
     }
 }

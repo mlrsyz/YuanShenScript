@@ -102,4 +102,9 @@ public abstract class Script implements Runnable {
     }
 
     public abstract PlatFormType platFormType();
+
+
+    public boolean isExit() {
+        return Boolean.parseBoolean(cookieData.get("exit"));
+    }
 }

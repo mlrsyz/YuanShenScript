@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 public class BRes {
     private Integer code;
-    private String message;
+    private String message = "";
     private Integer ttl;
     private Result data = new Result();
 

@@ -26,7 +26,7 @@ public class DouYuScript extends Script {
     public void initData() {
         count.set(300);
         //斗鱼的线程设置少一点 推荐1-5即可
-        threadNum = 1;
+        threadNum = 5;
         if (StringUtils.isEmpty(cookie)) {
             sendMessage("请设置cookie信息!执行结束");
             goOn = false;
@@ -51,20 +51,30 @@ public class DouYuScript extends Script {
     @Override
     public void run() {
         while (count.get() > 0) {
-            if (!goOn) {
-                log.info("执行结束 :{}", this);
-                return;
+            synchronized (this) {
+                if (!goOn) {
+                    log.info("执行结束 :{}", this);
+                    return;
+                }
+                if (isExit()) {
+                    goOn = false;
+                    sendMessage("===============执行结束 继续任务请选择任务继续执行 断开连接才会释放该次任务实例==================");
+                    log.info("执行结束 :{}", this);
+                    return;
+                }
             }
             String postResult = ScriptUtils.sendPost(receiveUrl, getRequestData(RequestEntry.param, activityType), getRequestData(RequestEntry.header, activityType));
-            sendMessage(postResult);
-            if (postResult.contains("奖励已领取")) {
-                sendMessage("奖励已领取:" + LocalTime.now() + "====>" + count.getAndDecrement() + " 次执行");
-                goOn = false;
-            } else {
-                sendMessage("未抢到==>(斗鱼)下一次执行:" + LocalTime.now() + "*********脚本剩余 " + count.getAndDecrement() + " 次执行");
+            synchronized (DouYuScript.class) {
+                if (!isExit()) {
+                    sendMessage(postResult);
+                    if (postResult.contains("奖励已领取")) {
+                        cookieData.put("exit", "true");
+                    } else {
+                        sendMessage("未抢到==>(斗鱼)下一次执行:" + LocalTime.now() + "*********脚本剩余 " + count.getAndDecrement() + " 次执行");
+                    }
+                }
             }
         }
-        goOn = false;
     }
 
     @Override

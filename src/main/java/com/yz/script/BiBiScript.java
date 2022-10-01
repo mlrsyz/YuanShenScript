@@ -66,9 +66,10 @@ public class BiBiScript extends Script {
             }
             if (receiveIdValid(receiveIdNow)) {
                 cookieData.put("receiveIdNow", receiveIdNow);
-                sendMessage("----->Live broadcast is complete!");
+                sendMessage("----->bilibili直播时长完成!");
                 break;
             }
+            sendMessage("bilibili直播时长还未完成,刷新中....");
             ScriptUtils.sleep(150);
         }
     }
@@ -83,47 +84,25 @@ public class BiBiScript extends Script {
                 }
                 if (isExit()) {
                     goOn = false;
-                    sendMessage("===============执行结束==================");
+                    sendMessage("===============执行结束 继续任务请选择任务继续执行 断开连接才会释放该次任务实例==================");
                     log.info("执行结束 :{}", this);
-                    if (cookieData.containsKey("ckd")) {
-                        sendMessage(cookieData.getOrDefault("ckd", ""));
-                    }
                     return;
                 }
             }
             String postResult = ScriptUtils.sendPost(receiveUrl, getRequestData(RequestEntry.param, UrlType.receive, activityType), getRequestData(RequestEntry.header, UrlType.receive, activityType));
-//            sendMessage(postResult);
-            int status = 2;
-            if (postResult.contains("请求过于频繁")) {
-                status = -1;
-            } else if (postResult.contains("任务奖励已领取") || postResult.contains("奖品已被领完")) {
-                status = 1;
-            } else if (postResult.contains("CdKeyV2")) {
-                status = 0;
-            }
             synchronized (BiBiScript.class) {
                 if (!isExit()) {
-                    switch (status) {
-                        case -1:
-                            sendMessage("频繁的请求:" + LocalTime.now() + "*********脚本剩余 " + count.getAndDecrement() + " 次执行");
-                            break;
-                        case 0:
+                    sendMessage(postResult);
+                    if (postResult.contains("已领取") || postResult.contains("领完")) {
+                        if (LocalDateTime.now().isAfter(activityType.getStartTime())) {
                             cookieData.put("exit", "true");
-                            cookieData.put("ckd", "移步活动平台查看cdk");
-                            sendMessage("!!!!!!!!!!!成功抢到ckd:(第" + count.getAndDecrement() + "次抢到)" + LocalTime.now());
-                            break;
-                        case 1:
-                            if (LocalDateTime.now().isAfter(activityType.getStartTime())) {
-                                cookieData.put("exit", "true");
-                            }
-                            sendMessage("(第 " + count.getAndDecrement() + "次执行结束) 结束时间:" + LocalTime.now() + "---->" + postResult);
-                            break;
-                        default:
-                            sendMessage("时间:" + LocalTime.now() + "*********脚本剩余 " + count.getAndDecrement() + " 次执行---->" + postResult);
+                        }
+                    } else if (postResult.contains("CdKeyV2")) {
+                        cookieData.put("exit", "true");
                     }
+                    sendMessage("时间:" + LocalTime.now() + "*********脚本剩余 " + count.getAndDecrement() + " 次执行---->" + postResult);
                 }
             }
-//            ScriptUtils.sleep(sleepTime);
         }
     }
 
@@ -167,9 +146,5 @@ public class BiBiScript extends Script {
 
     public static boolean receiveIdValid(String receiveIdNow) {
         return !StringUtils.isEmpty(receiveIdNow) && !"0".equals(receiveIdNow);
-    }
-
-    public boolean isExit() {
-        return Boolean.parseBoolean(cookieData.get("exit"));
     }
 }
