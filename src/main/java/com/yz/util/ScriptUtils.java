@@ -16,6 +16,7 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -207,7 +208,24 @@ public class ScriptUtils {
     }
 
     public static void main(String[] args) {
-        getBiLiBiLiActivityType();
+//        getBiLiBiLiActivityType();
+        List<Script> scripts = new ArrayList<>();
+        String douyuCookie = "dy_did=0aeea4178642c76031cb792200051601; acf_did=0aeea4178642c76031cb792200051601; smidV2=20220827131020bb46ebadce070958fd2fc3f106ba7bfe006ea6ecd50bf3ae0; acf_auth=1febJU4DzqrfEvRiar4Y%2FLM4tMhjnJX7vIX1E1%2F5bpoj1MNGqVSh0kvMOYtC2ZHpd5QodSvnVbhg83ngAELPqfpYG%2FoNg2NNLoFbtbMolR33yKzZpmbZ; dy_auth=b75fU1uoRAPJPND18deng2MjcS5oAH30y7ZskJYccNvpOt86HQCBW4OTpsyCecVfiNH4xIuyrPP4ktCd%2F7HrI6cU2BfhZyFpzQAOxN143VP6OOd1XIEo; wan_auth37wan=ea01756423f7rV11sJ5DRy0ESshJX35tR0xbVYeXo%2BFlk1dxGBp%2FXUkZqjDeJcmDhZQuWJ6o3ifWweXa%2BzHe9HrwZ1aW1Q2eqU4H5xhKzawlo8R07g; acf_uid=94497424; acf_username=94497424; acf_nickname=%E6%A2%A6%E9%9B%A2%E8%8B%A5%E6%AE%87; acf_own_room=1; acf_groupid=1; acf_phonestatus=1; acf_ct=0; acf_ltkid=81259575; acf_biz=1; acf_stk=464770e2cf69765c; acf_avatar=//apic.douyucdn.cn/upload/avanew/face/201612/14/23/1a93a78bc843685d713602689ed7fbe9_; Hm_lvt_e99aee90ec1b2106afe7ec3b199020a7=1665028179,1665039327,1665058780,1665071080; PHPSESSID=1v04bn5ugsp73708b16fgstv72; acf_ccn=810820a86c664d8dce7674dfdea7bbac; cvl_csrf_token=9b6b79713c1d44488ccca923eb4be85f; Hm_lpvt_e99aee90ec1b2106afe7ec3b199020a7=1665072961";
+        String bilibiliCookie = "buvid3=E9BFF8A5-FBBF-DB65-0D69-7ABB2A609A9481147infoc; _uuid=C8FE4C25-A756-5814-7E44-1A1A1247FA6280871infoc; buvid4=B26BD057-DE29-DC86-D59F-10C5D0C8EAC482237-022031619-kji2bknSwKco8f52F6rjzQu1hstbLjNPkiJRLc50Ghd04Ex55Uu24Q%3D%3D; rpdid=0zbfAHGGS5|SKQVpjnQ|3XA|3w1Nusda; LIVE_BUVID=AUTO5716475960417726; nostalgia_conf=-1; CURRENT_BLACKGAP=0; buvid_fp_plain=undefined; i-wanna-go-back=-1; hit-dyn-v2=1; blackside_state=0; is-2022-channel=1; b_nut=100; fingerprint3=69925bb39c9877b53c6667b700549ddb; bp_video_offset_102462368=708587346802507800; CURRENT_QUALITY=80; DedeUserID=102462368; DedeUserID__ckMd5=76421ba71f67f422; b_ut=5; fingerprint=35ad5efefc486b91f8ecf14f1b220ded; SESSDATA=9e39d20f%2C1680506135%2C831ce%2Aa1; bili_jct=33535c8ff50200510fb48a694a9da020; sid=5byqogpo; buvid_fp=a6e79d942a75422374d9c95c40d230c7; CURRENT_FNVAL=4048; dy_spec_agreed=1; _dfcaptcha=9494a5e2dc25b786a3f24b5f5b21c9c9; PVID=2; b_lsid=4AFA2AC8_183AE070C8B";
+//        final LocalDateTime dateTime = LocalDateTime.of(2022, 10, 3, 0, 0,1);
+//        scripts.add(execLocalScript(douyuCookie, ActivityType.douYu_3_330, null));
+        for (int i = 0; i < 3; i++) {
+            scripts.add(execLocalScript(bilibiliCookie, ActivityType.bibi_10_1000, null));
+            scripts.add(execLocalScript(douyuCookie, ActivityType.douYu_10_1000, null));
+        }
+        while (true) {
+            if (scripts.stream().filter(Objects::nonNull).noneMatch(script -> script.goOn)) {
+                YuanShenThreadTool.ysThreadPoolExecutor.shutdown();
+                break;
+            }
+            sleep(1000);
+        }
+
     }
 
     public static void getBiLiBiLiActivityType() {
@@ -244,5 +262,16 @@ public class ScriptUtils {
                         );
                     }
                 });
+    }
+
+    public static Script execLocalScript(String cookie, ActivityType activityType, LocalDateTime dateTime) {
+        Script script = createScript(activityType.getType());
+        // 发送消息给客户端
+        if (script == null) {
+            log.info("没有当前活动的执行脚本");
+            return null;
+        }
+        script.execute(cookie, activityType, dateTime, null);
+        return script;
     }
 }

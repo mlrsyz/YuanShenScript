@@ -49,8 +49,10 @@ public abstract class Script implements Runnable {
 
     public void sendMessage(String str) {
         try {
-            if (session.isOpen()) {
+            if (Objects.nonNull(session) && session.isOpen()) {
                 session.sendMessage(new TextMessage(str));
+            } else {
+                log.info(str);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -60,7 +62,7 @@ public abstract class Script implements Runnable {
     //线程提交执行
     public void execute(String cookie, ActivityType activityType, LocalDateTime executionTime, WebSocketSession session) {
         this.session = session;
-        if (StringUtils.isEmpty(cookie) || Objects.isNull(activityType) || Objects.isNull(session)) {
+        if (StringUtils.isEmpty(cookie) || Objects.isNull(activityType)) {
             sendMessage("执行数据有误(cookie为空/活动为空不/服务端通讯不存在),停止执行");
             return;
         }
