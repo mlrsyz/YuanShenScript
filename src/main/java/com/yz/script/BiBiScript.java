@@ -32,7 +32,9 @@ public class BiBiScript extends Script {
 
     @Override
     public void initData() {
-        threadNum = 10;
+        //b站限制了30s/116次请求  就被被拒绝访问 写死1个线程跑吧...
+        threadNum = 1;
+        sleepTime = 285L;
         if (StringUtils.isEmpty(cookie)) {
             sendMessage("请设置cookie信息!执行结束");
             goOn = false;
@@ -102,6 +104,7 @@ public class BiBiScript extends Script {
                     }
                     sendMessage("时间:" + LocalTime.now() + "*********脚本剩余 " + count.getAndDecrement() + " 次执行---->" + postResult);
                 }
+                ScriptUtils.sleep(sleepTime);
             }
         }
     }
@@ -124,10 +127,13 @@ public class BiBiScript extends Script {
             res.put("cookie", cookie);
             res.put("origin", "https://www.bilibili.com");
             res.put("referer", "https://www.bilibili.com/");
+            res.put("sec-ch-ua", "\"Microsoft Edge\";v=\"107\", \"Chromium\";v=\"107\", \"Not=A?Brand\";v=\"24\"");
+            res.put("sec-ch-ua-mobile", "?0");
+            res.put("sec-ch-ua-platform", "\"Windows\"");
             res.put("sec-fetch-dest", "empty");
             res.put("sec-fetch-mode", "cors");
             res.put("sec-fetch-site", "same-site");
-            res.put("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/101.0.4951.64");
+            res.put("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.35");
         }
         if (RequestEntry.param.equals(requestEntry)) {
             res.put("csrf", cookieData.get("bili_jct"));
