@@ -24,9 +24,10 @@ public class DouYuScript extends Script {
 
     @Override
     public void initData() {
-        count.set(300);
+        count.set(500);
         //斗鱼的线程设置少一点 推荐1-5即可
-        threadNum = 5;
+        threadNum = 3;
+        sleepTime = 150L;
         if (StringUtils.isEmpty(cookie)) {
             sendMessage("请设置cookie信息!执行结束");
             goOn = false;
@@ -77,6 +78,7 @@ public class DouYuScript extends Script {
                     }
                 }
             }
+            ScriptUtils.sleep(sleepTime);
         }
     }
 

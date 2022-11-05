@@ -104,8 +104,8 @@ public class BiBiScript extends Script {
                     }
                     sendMessage("时间:" + LocalTime.now() + "*********脚本剩余 " + count.getAndDecrement() + " 次执行---->" + postResult);
                 }
-                ScriptUtils.sleep(sleepTime);
             }
+            ScriptUtils.sleep(sleepTime);
         }
     }
 
