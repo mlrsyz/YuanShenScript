@@ -72,7 +72,7 @@ public class BiBiScript extends Script {
                 break;
             }
             sendMessage("bilibili直播时长还未完成,刷新中....");
-            ScriptUtils.sleep(150);
+            ScriptUtils.sleep(sleepTime);
         }
     }
 
