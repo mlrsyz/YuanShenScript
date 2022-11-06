@@ -71,7 +71,7 @@ public class BiBiScript extends Script {
                 sendMessage("----->bilibili直播时长完成!");
                 break;
             }
-            sendMessage("bilibili直播时长还未完成,刷新中....");
+            sendMessage("bilibili直播时长还未完成,刷新中....确认完成还显示请重新设置cookie");
             ScriptUtils.sleep(sleepTime);
         }
     }
