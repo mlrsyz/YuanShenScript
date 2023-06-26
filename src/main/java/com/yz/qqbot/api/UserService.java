@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 用户API
@@ -44,7 +45,7 @@ public class UserService extends BaseService {
     /**
      * 获取用户频道列表
      */
-    public List<GuildsMe> queryGuildMe(String before, String after, String limit) {
+    public List<GuildsMe> queryGuildMe(String before, String after, Integer limit) {
         Map<String, String> params = new HashMap<String, String>() {{
             if (!StringUtils.isEmpty(after)) {
                 put("before", before);
@@ -52,7 +53,7 @@ public class UserService extends BaseService {
             if (!StringUtils.isEmpty(after)) {
                 put("after", after);
             }
-            put("limit", StringUtils.isEmpty(limit) ? "100" : after);
+            put("limit", Objects.isNull(limit) ? "100" : after);
         }};
         String requestUrl = botConfig.getPrefixApi(guild_me);
         String result = ScriptUtils.sendGet(requestUrl, params, botConfig.getHeader());

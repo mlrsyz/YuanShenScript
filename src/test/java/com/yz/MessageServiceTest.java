@@ -1,11 +1,11 @@
 package com.yz;
 
 import com.alibaba.fastjson.JSON;
-import com.yz.qqbot.api.MembersService;
-import com.yz.qqbot.api.SendMessage;
-import com.yz.qqbot.api.UserService;
+import com.yz.qqbot.api.*;
+import com.yz.qqbot.domain.Channel;
 import com.yz.qqbot.domain.GuildsMe;
 import com.yz.qqbot.domain.Member;
+import com.yz.qqbot.domain.User;
 import com.yz.qqbot.request.SendMessageRequest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -25,13 +25,19 @@ import java.util.List;
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class SendMessageTest {
+public class MessageServiceTest {
     @Autowired
-    private SendMessage sendMessage;
+    private MessageService messageService;
+    @Autowired
+    private DmsService dmsService;
     @Autowired
     private MembersService membersService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private GuildService guildService;
+    @Autowired
+    private ChannelService channelService;
 
 
     @SneakyThrows
@@ -40,18 +46,27 @@ public class SendMessageTest {
         SendMessageRequest sendMessageRequest = new SendMessageRequest();
         sendMessageRequest.setContent("发送蟾蜍图片测试");
         sendMessageRequest.setFileImage("蟾蜍", fileToByte(new File("C:\\Users\\ymx\\Desktop\\files\\IMG_20201107_185028.jpg")));
-//        sendMessage.sendDefaultChannelMsg(sendMessageRequest);
-        sendMessage.sendChannelMsg(sendMessageRequest,"6637455034193802989",true);
+        log.info("sendDms ====> {}", JSON.toJSONString(dmsService.sendDmsMsg(sendMessageRequest, "6637455034193802989")));
+        log.info("sendChannelMsg ====> {}", JSON.toJSONString(messageService.sendChannelMsg(sendMessageRequest, "481170028")));
     }
 
 
     @SneakyThrows
     @Test
     public void t02() {
+        User currentUser = userService.getCurrentUser();
+        log.info("currentUser ====> {}", JSON.toJSONString(currentUser));
         List<Member> members = membersService.queryGuildMembers("6947530166796095191", "0", 3);
-        List<GuildsMe> GuildsMes = userService.queryGuildMe(null, null, null);
+        List<GuildsMe> GuildsMes = userService.queryGuildMe(null, null, 1);
         log.info("members ====> {}", JSON.toJSONString(members));
         log.info("GuildsMes ====> {}", JSON.toJSONString(GuildsMes));
+        GuildsMe guild = guildService.getGuild(GuildsMes.get(0).getId());
+        log.info("guild ====> {}", JSON.toJSONString(guild));
+
+        List<Channel> channels = channelService.getGuildsList(guild.getId());
+        log.info("channels ====> {}", JSON.toJSONString(channels));
+        Channel channelDetail = channelService.getChannelDetail(channels.get(0).getId());
+        log.info("channelDetail ====> {}", JSON.toJSONString(channelDetail));
     }
 
     /**

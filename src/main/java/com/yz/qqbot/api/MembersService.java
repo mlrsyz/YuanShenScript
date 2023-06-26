@@ -28,12 +28,15 @@ import java.util.Objects;
 @Service
 public class MembersService extends BaseService {
     //获取频道成员列表
-    private static final String guild_Members = "/guilds/{0}/members";
+    String guildMembersUrl(String guild_id) {
+        return MessageFormat.format("/guilds/{0}/members", guild_id);
+    }
 
     //用于获取 guild_id 频道中指定role_id身份组下所有成员的详情列表，支持分页
-    private static final String guild_role_members = "/guilds/{0}/roles/{1}/members";
+    String guildRoleMembersUrl(String guild_id, String role_id) {
+        return MessageFormat.format("/guilds/{0}/roles/{1}/members", guild_id, role_id);
+    }
 
-    //
     /**
      * 用于删除 guild_id 指定的频道下的成员 user_id。&& 用于获取 guild_id 指定的频道中 user_id 对应成员的详细信息
      * <p>
@@ -45,7 +48,9 @@ public class MembersService extends BaseService {
      * 公域机器人暂不支持申请，仅私域机器人可用，选择私域机器人后默认开通。
      * 注意: 开通后需要先将机器人从频道移除，然后重新添加，方可生效。
      */
-    private static final String guilds_user = "/guilds/{0}/members/{1}";
+    String guildsUserUrl(String guild_id, String user_id) {
+        return MessageFormat.format("/guilds/{0}/members/{1}", guild_id, user_id);
+    }
 
     /**
      * 获取频道成员列表
@@ -55,7 +60,7 @@ public class MembersService extends BaseService {
      * @param limit    分页大小，1-400，默认是 1。成员较多的频道尽量使用较大的limit值，以减少请求数
      */
     public List<Member> queryGuildMembers(String guild_id, String after, Integer limit) {
-        String requestUrl = botConfig.getPrefixApi(MessageFormat.format(guild_Members, guild_id));
+        String requestUrl = botConfig.getPrefixApi(guildMembersUrl(guild_id));
         Map<String, String> params = new HashMap<String, String>() {{
             put("after", StringUtils.isEmpty(after) ? "0" : after);
             put("limit", Objects.isNull(limit) ? "10" : limit.toString());
@@ -75,7 +80,7 @@ public class MembersService extends BaseService {
                                              String role_id,
                                              String start_index,
                                              Integer limit) {
-        String requestUrl = botConfig.getPrefixApi(MessageFormat.format(guild_role_members, guild_id, role_id));
+        String requestUrl = botConfig.getPrefixApi(guildRoleMembersUrl(guild_id, role_id));
         Map<String, String> params = new HashMap<String, String>() {{
             put("start_index", StringUtils.isEmpty(start_index) ? "0" : start_index);
             put("limit", Objects.isNull(limit) ? "10" : limit.toString());
@@ -88,7 +93,7 @@ public class MembersService extends BaseService {
      * 用于获取 guild_id 指定的频道中 user_id 对应成员的详细信息
      */
     public Member getGuildsUser(String guild_id, String user_id) {
-        String requestUrl = botConfig.getPrefixApi(MessageFormat.format(guilds_user, guild_id, user_id));
+        String requestUrl = botConfig.getPrefixApi(guildsUserUrl(guild_id, user_id));
         String result = ScriptUtils.sendGet(requestUrl, null, botConfig.getHeader());
         return JSON.parseObject(result, Member.class);
     }
@@ -104,7 +109,7 @@ public class MembersService extends BaseService {
                                  String user_id,
                                  Boolean add_blacklist,
                                  Integer delete_history_msg_days) {
-        String requestUrl = botConfig.getPrefixApi(MessageFormat.format(guilds_user, guild_id, user_id));
+        String requestUrl = botConfig.getPrefixApi(guildsUserUrl(guild_id, user_id));
         Map<String, Object> botBody = new HashMap<String, Object>(2) {{
             if (Objects.nonNull(add_blacklist)) {
                 put("add_blacklist", add_blacklist);

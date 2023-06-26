@@ -2,6 +2,8 @@ package com.yz.qqbot.domain;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * 作者：ymx <br/>
  * 创建时间：2023/5/11 1:17 <br/>
@@ -19,7 +21,7 @@ public class Member {
     /**
      * [数组]用户在频道内的身份组ID, 默认值可参考DefaultRoles
      */
-    private String roles;
+    private List<String> roles;
     /**
      * 用户加入频道的时间
      */

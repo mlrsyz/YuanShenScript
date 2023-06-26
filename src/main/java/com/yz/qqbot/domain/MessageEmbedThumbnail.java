@@ -8,6 +8,8 @@ import lombok.Data;
  */
 @Data
 public class MessageEmbedThumbnail {
-    //图片地址
+    /**
+     * 图片地址
+     */
     private String url;
 }

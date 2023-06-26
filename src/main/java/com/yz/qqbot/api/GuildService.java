@@ -18,7 +18,9 @@ import java.text.MessageFormat;
 public class GuildService extends BaseService {
 
     //GET /guilds/{guild_id}
-    private static final String guild = "/guilds/{0}";
+    String guildUrl(String guild_id) {
+        return MessageFormat.format("/guilds/{0}", guild_id);
+    }
 
     /**
      * 用于获取 guild_id 指定的频道的详情
@@ -26,7 +28,7 @@ public class GuildService extends BaseService {
      * @param guild_id 频道ID
      */
     public GuildsMe getGuild(String guild_id) {
-        String requestUrl = botConfig.getPrefixApi(MessageFormat.format(guild, guild_id));
+        String requestUrl = botConfig.getPrefixApi(guildUrl(guild_id));
         String result = ScriptUtils.sendGet(requestUrl, null, botConfig.getHeader());
         return JSON.parseObject(result, GuildsMe.class);
     }

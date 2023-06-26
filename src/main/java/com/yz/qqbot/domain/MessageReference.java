@@ -8,8 +8,12 @@ import lombok.Data;
  */
 @Data
 public class MessageReference {
-    //需要引用回复的消息 id
+    /**
+     * 需要引用回复的消息 id
+     */
     private String message_id;
-    //是否忽略获取引用消息详情错误，默认否
+    /**
+     * 是否忽略获取引用消息详情错误，默认否
+     */
     private Boolean ignore_get_message_error;
 }

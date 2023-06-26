@@ -9,7 +9,16 @@ import lombok.Data;
  */
 @Data
 public class Dms {
+    /**
+     * 私信会话关联的频道 id
+     */
     private String guild_id;
+    /**
+     * 私信会话关联的子频道 id
+     */
     private String channel_id;
+    /**
+     * 创建私信会话时间戳
+     */
     private String create_time;
 }

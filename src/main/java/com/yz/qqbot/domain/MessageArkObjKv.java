@@ -8,8 +8,12 @@ import lombok.Data;
  */
 @Data
 public class MessageArkObjKv {
-    //key
+    /**
+     * key
+     */
     private String key;
-    //value
+    /**
+     * value
+     */
     private String value;
 }

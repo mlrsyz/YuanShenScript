@@ -2,6 +2,8 @@ package com.yz.qqbot.domain;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * 创建子频道
  * 作者：ymx <br/>
@@ -36,7 +38,7 @@ public class CreateChannel {
     /**
      * 数组	子频道私密类型成员 ID
      */
-    private String private_user_ids;
+    private List<String> private_user_ids;
     /**
      * 子频道发言权限 SpeakPermission
      */

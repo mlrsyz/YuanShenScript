@@ -8,10 +8,16 @@ import lombok.Data;
  */
 @Data
 public class RenderData {
-    //按纽上的文字
+    /**
+     * 按纽上的文字
+     */
     private String label;
-    //点击后按纽上文字
+    /**
+     * 点击后按纽上文字
+     */
     private String visited_label;
-    //按钮样式，参考 RenderStyle
+    /**
+     * 按钮样式，参考 RenderStyle
+     */
     private int style;
 }
