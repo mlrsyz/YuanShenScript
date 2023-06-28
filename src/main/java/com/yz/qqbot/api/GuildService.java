@@ -1,7 +1,7 @@
 package com.yz.qqbot.api;
 
 import com.alibaba.fastjson.JSON;
-import com.yz.qqbot.domain.GuildsMe;
+import com.yz.qqbot.domain.Guild;
 import com.yz.util.ScriptUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,9 +27,9 @@ public class GuildService extends BaseService {
      *
      * @param guild_id 频道ID
      */
-    public GuildsMe getGuild(String guild_id) {
+    public Guild getGuild(String guild_id) {
         String requestUrl = botConfig.getPrefixApi(guildUrl(guild_id));
         String result = ScriptUtils.sendGet(requestUrl, null, botConfig.getHeader());
-        return JSON.parseObject(result, GuildsMe.class);
+        return JSON.parseObject(result, Guild.class);
     }
 }

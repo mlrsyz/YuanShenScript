@@ -2,7 +2,7 @@ package com.yz.qqbot.api;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.yz.qqbot.domain.GuildsMe;
+import com.yz.qqbot.domain.Guild;
 import com.yz.qqbot.domain.User;
 import com.yz.util.ScriptUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +45,7 @@ public class UserService extends BaseService {
     /**
      * 获取用户频道列表
      */
-    public List<GuildsMe> queryGuildMe(String before, String after, Integer limit) {
+    public List<Guild> queryGuildMe(String before, String after, Integer limit) {
         Map<String, String> params = new HashMap<String, String>() {{
             if (!StringUtils.isEmpty(after)) {
                 put("before", before);
@@ -57,6 +57,6 @@ public class UserService extends BaseService {
         }};
         String requestUrl = botConfig.getPrefixApi(guild_me);
         String result = ScriptUtils.sendGet(requestUrl, params, botConfig.getHeader());
-        return JSONArray.parseArray(result, GuildsMe.class);
+        return JSONArray.parseArray(result, Guild.class);
     }
 }

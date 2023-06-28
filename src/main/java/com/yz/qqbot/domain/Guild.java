@@ -8,7 +8,7 @@ import lombok.Data;
  * 创建时间：2023/6/25 18:55 <br/>
  */
 @Data
-public class GuildsMe {
+public class Guild {
     /**
      * 频道ID
      */
@@ -45,4 +45,8 @@ public class GuildsMe {
      * 描述
      */
     private String description;
+    /**
+     * 操作人
+     */
+    private String op_user_id;
 }

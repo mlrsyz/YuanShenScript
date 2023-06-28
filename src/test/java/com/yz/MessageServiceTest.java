@@ -3,7 +3,7 @@ package com.yz;
 import com.alibaba.fastjson.JSON;
 import com.yz.qqbot.api.*;
 import com.yz.qqbot.domain.Channel;
-import com.yz.qqbot.domain.GuildsMe;
+import com.yz.qqbot.domain.Guild;
 import com.yz.qqbot.domain.Member;
 import com.yz.qqbot.domain.User;
 import com.yz.qqbot.request.SendMessageRequest;
@@ -57,10 +57,10 @@ public class MessageServiceTest {
         User currentUser = userService.getCurrentUser();
         log.info("currentUser ====> {}", JSON.toJSONString(currentUser));
         List<Member> members = membersService.queryGuildMembers("6947530166796095191", "0", 3);
-        List<GuildsMe> GuildsMes = userService.queryGuildMe(null, null, 1);
+        List<Guild> guilds = userService.queryGuildMe(null, null, 1);
         log.info("members ====> {}", JSON.toJSONString(members));
-        log.info("GuildsMes ====> {}", JSON.toJSONString(GuildsMes));
-        GuildsMe guild = guildService.getGuild(GuildsMes.get(0).getId());
+        log.info("GuildsMes ====> {}", JSON.toJSONString(guilds));
+        Guild guild = guildService.getGuild(guilds.get(0).getId());
         log.info("guild ====> {}", JSON.toJSONString(guild));
 
         List<Channel> channels = channelService.getGuildsList(guild.getId());

@@ -3,8 +3,10 @@ package com.yz.qqbot;
 import com.alibaba.fastjson.JSON;
 import com.yz.qqbot.api.MessageService;
 import com.yz.qqbot.api.WSSService;
+import com.yz.qqbot.api.enumtype.Intents;
 import com.yz.qqbot.domain.Message;
 import com.yz.qqbot.domain.WssPayload;
+import com.yz.qqbot.handler.GuildEventHandle;
 import com.yz.qqbot.request.SendMessageRequest;
 import com.yz.util.ScriptUtils;
 import com.yz.util.YuanShenThreadTool;
@@ -29,6 +31,8 @@ public class WSSConnectInitialization {
     protected BotConfig botConfig;
     private final WSSService wSSService;
     private final MessageService messageService;
+    //事件处理集合
+    private final GuildEventHandle eventHandle;
     //消息下行序列号
     private static Integer heartbeatSerialNumber = null;
     //心跳周期，单位毫秒
@@ -38,10 +42,14 @@ public class WSSConnectInitialization {
     private static WebSocketClient botWss = null;
     private static String session_id;
 
-    public WSSConnectInitialization(BotConfig botConfig, WSSService wSSService, MessageService messageService) {
+    public WSSConnectInitialization(BotConfig botConfig,
+                                    WSSService wSSService,
+                                    MessageService messageService,
+                                    GuildEventHandle eventHandle) {
         this.botConfig = botConfig;
         this.wSSService = wSSService;
         this.messageService = messageService;
+        this.eventHandle = eventHandle;
         botWss = getBotWss();
     }
 
@@ -62,25 +70,26 @@ public class WSSConnectInitialization {
                     }
                     WssPayload payload = JSON.parseObject(message, WssPayload.class);
                     if (Objects.nonNull(payload.getS())) {
-                        //设置消息下行序列号
                         heartbeatSerialNumber = payload.getS();
                     }
-                    //连接成功返回Hello
-                    if (payload.getOp() == 10 && Objects.nonNull(payload.getD())) {
-                        //心跳
+                    Intents intents = Intents.getIntents(payload.getT());
+                    if (Objects.equals(payload.getOp(), 0) && Intents.isIntents(intents)) {
+                        //处理事件回调
+                        eventHandle.execIntents(intents, payload);
+                        return;
+                    }
+                    if (Intents.isHello(payload)) {
                         heartbeatInterval = JSON.parseObject(JSON.toJSONString(payload.getD())).getInteger("heartbeat_interval");
                         sendIdentify();
                         return;
                     }
-                    //鉴权返回消息
-                    if (payload.getOp() == 0 && Objects.equals(payload.getT(), "READY")) {
+                    if (Intents.isReady(payload)) {
                         WssPayload.ReadyEvent readyEvent = JSON.parseObject(JSON.toJSONString(payload.getD()), WssPayload.ReadyEvent.class);
                         session_id = readyEvent.getSession_id();
-                        //保持心跳检测
                         keepHeartbeat();
                     }
                     //恢复成功之后，就开始补发遗漏事件，所有事件补发完成之后，会下发一个 Resumed Event
-                    if (payload.getOp() == 0 && Objects.equals(payload.getT(), "RESUMED")) {
+                    if (Intents.isResumed(payload)) {
                         log.info("ws 恢复成功 补发消息完成" + message);
                     }
                     if (payload.getOp() == 7) {
@@ -128,8 +137,7 @@ public class WSSConnectInitialization {
         payload.setOp(2);
         WssPayload.Identify identify = new WssPayload.Identify();
         identify.setToken(botConfig.getTokenHeader());
-        identify.setIntents(1 << 30);
-//        identify.setIntents(1 << 1);
+        identify.setIntents(1 | 1 << 30 | 1 << 1);
 //        identify.setShard(Arrays.asList(0, 0));
         WssPayload.Properties properties = new WssPayload.Properties();
         properties.setOs("linux");
